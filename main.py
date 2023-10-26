@@ -68,7 +68,7 @@ class Entity:
             return True
 
         # Random chance mortality
-        if random.random() < 0..001: # 0.01% chance every tick
+        if random.random() < 0.001: # 0.01% chance every tick
             return True
         
         return False
