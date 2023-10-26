@@ -6,7 +6,7 @@
 ChronoSim is a dynamic simulation framework designed to showcase the interactions and decision-making processes of virtual entities ("Entellecs") within an evolving environment. With an integrated time system and changing seasons, it offers a unique perspective into the life cycles and interactions of Entellecs.
 
 # Features
-## 1. Entity Neural Networks:
+## 1. Entity Neural Networks
 Each Entellect is equipped with a neural network to make decisions based on its environment and state.
 ## 2. Dynamic Time System
 Simulates the passage of time, with days and seasons. This system influences Entellect behavior, especially when environmental factors become challenging.
@@ -18,13 +18,13 @@ Entellects can reproduce based on certain criteria, introducing offspring into t
 Entellects make decisions to gather and utilize resources in their environment. Resources can be used to construct shelters or exchanged with other Entellects.
 ## 6. Dynamic Movement
 Instead of rigid, grid-based movement, Entellects have fluid movement capabilities. They can move in any directed based on an angle, making their motion more natural and organic.
-## 7. Interactions:
-Entellects can interact with:
-### - Food Sources:
+## 7. Interactions
+Entellects can interact with...
+- Food Sources:
 Entellects gain energy by consuming food sources.
-### - Shelters
+- Shelters
 Entellects seek out shelters or construct their own, providing protection from environmental challenges.
-### - Other Entellects
+- Other Entellects
 Entellects engage in a variety of interactions, such as:
 - Communication: Strengthen relationships and share knowledge
 - Exchange: Swap resources based on needs and availability
