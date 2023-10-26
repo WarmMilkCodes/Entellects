@@ -9,7 +9,7 @@ ChronoSim is a dynamic simulation framework designed to showcase the interaction
 ## 1. Entity Neural Networks:
 Each Entellect is equipped with a neural network to make decisions based on its environment and state.
 ## 2. Dynamic Time System
-Simulates the passage of time, with each real-world minute representing an hour in the simulation.
+Simulates the passage of time, with days and seasons. This system influences Entellect behavior, especially when environmental factors become challenging.
 ## 3. Season Dynamics
 Experience the changing seasons and observe how they influence the behavior of Entellects.
 ## 4. Reproduction Mechanism
