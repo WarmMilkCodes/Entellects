@@ -214,6 +214,9 @@ time_system = TimeSystem()
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 
+# Load font for text display
+font = pygame.font.SysFont(None, 36) # default font, size 36
+
 # Create entities and food sources
 entities = [Entity(random.randint(0, 800), random.randint(0, 600)) for _ in range(2)]
 food_sources = [(random.randint(0, 800), random.randint(0, 600)) for _ in range(10)]
@@ -229,10 +232,18 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+    # Calculate delta_time (time passed since last frame)
+    current_ticks = pygame.time.get_ticks()
+    delta_time = (current_ticks - previous_ticks) / 1000.0 # seconds
+    previous_ticks = current_ticks                  
+
     # Update time system
-    time_system.update(delta_time)
+    time_system.update(delta_time * 60) # 1 minute real time = 1 hour in sim
     current_season = time_system.get_season()
     current_time_of_day = time_system.get_time_of_day()
+
+    # Print current time and season (for testing)
+    print(f"Current time: {time_system.current_time:.2f} hours, Season: {time_system.get_season()}")
 
     # Update entities
     for entity in entities:
@@ -262,6 +273,13 @@ while running:
 
     # Decay epsilon
     epsilon *= epsilon_decay
+
+    # Render in-game date and time
+    in_game_days = int(time_system.current_time // 24)
+    in_game_hours = int(time_system.current_time % 24)
+    time_text = f"Day {in_game_days}, {in_game_hours:02d}:00 {time_system.get_time_of_day().capitalize()}, {time_system.get_season().capitalize()}"
+    time_surface = font.render(time_text, True, (0, 0, 0))
+    screen.blit(time_surface, (10, 10))
 
     # Render entities and food sources on the screen
     screen.fill((200, 200, 200))
