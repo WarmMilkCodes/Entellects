@@ -58,6 +58,21 @@ class Entity:
         self.memory = []
         self.name = name or self.generate_name()
 
+    def check_mortality(self, environmental_factor=1.0):
+        # Energy-based mortality
+        if self.energy <= 0:
+            return True
+
+        # Envornmental factor mortality (eg, harsh winter)
+        if self.energy < 10 and random.random() < 0.01 * environmental_factor:
+            return True
+
+        # Random chance mortality
+        if random.random() < 0..001: # 0.01% chance every tick
+            return True
+        
+        return False
+
     def gather_resources(self, resource):
         if self.nearby(resource):
             self.resource[resource.type] += resource.gather()
@@ -249,13 +264,14 @@ while running:
     for entity in entities:
         #Entity ages with the passage of time
         entity.age += delta_time / 3600.0 # Conver seconds to hours
-        
         action = entity.decide_action(food_sources, epsilon)
         entity.perform_action(action, food_sources)
         reward = entity.receive_reward(action, food_sources)
         next_state = entity.get_state(food_sources)
         entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
         entity.train()
+        if entity.check_morality():
+            entities.remove(entity)
 
     # Seasonal dynamics (ex. adjusting food regen rate)
     if current_season in ['spring', 'summer']:
