@@ -57,13 +57,14 @@ class Entity:
         self.optimizer = optim.Adam(self.neural_network.parameters(), lr=0.01)
         self.memory = []
         self.name = name or self.generate_name()
+        self.reproduction_cooldown = 0 # attribute to manage reproduction cooldown
 
     def check_mortality(self, environmental_factor=1.0):
         # Energy-based mortality
         if self.energy <= 0:
             return True
 
-        # Envornmental factor mortality (eg, harsh winter)
+        # Environmental factor mortality (eg, harsh winter)
         if self.energy < 10 and random.random() < 0.01 * environmental_factor:
             return True
 
@@ -102,13 +103,15 @@ class Entity:
         return False
 
     def reproduce(self, other_entity):
-        if self.can_reproduce_with(other_entity):
+        if self.can_reproduce_with(other_entity) and self.reproduction_cooldown <= 0 and other_entity.reproduction_cooldown <= 0:
             # Determine offspring properties based on parents
             child_x = (self.x + other_entity.x) // 2
             child_y = (self.y + other_entity.y) // 2
             child = Entity(child_x, child_y)
             child_name = self.name[:2] + other_entity.name[-2:]
             child = Entity(child_x, child_y, name=child_name)
+            self.reproduction_cooldown = 24 # 24 hour cooldown after reproducing
+            other_entity.reproduction_cooldown = 24
             return child
         
     def get_state(self, food_sources):
@@ -124,14 +127,19 @@ class Entity:
         # Placeholder logic for moving and interacting
         if action == 0: # move up
             self.y -= 1
+            self.energy -= 1
         elif action == 1: # move down
             self.y += 1
+            self.energy -= 1
         elif action == 2: # move left
             self.x -= 1
+            self.energy -= 1
         elif action == 3: # move right
             self.x += 1
+            self.energy -= 1
         elif action == 4: # interact
-            pass # interaction logic (with food or other entities)
+            self.energy -= 1
+            # Implement interaction logic
         
     def receive_reward(self, action, food_sources):
         # Default negative reward for energy expenditure
@@ -247,6 +255,8 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+    
+
     # Calculate delta_time (time passed since last frame)
     current_ticks = pygame.time.get_ticks()
     delta_time = (current_ticks - previous_ticks) / 1000.0 # seconds
@@ -260,6 +270,11 @@ while running:
     # Print current time and season (for testing)
     print(f"Current time: {time_system.current_time:.2f} hours, Season: {time_system.get_season()}")
 
+    # Adjust environmental factor based on season and time of day
+    environmental_factor = 1.0
+    if current_season == "winter" and current_time_of_day == "night":
+        environmental_factor = 1.5
+    
     # Update entities
     for entity in entities:
         #Entity ages with the passage of time
@@ -270,8 +285,11 @@ while running:
         next_state = entity.get_state(food_sources)
         entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
         entity.train()
-        if entity.check_morality():
+        if entity.check_morality(environmental_factor):
             entities.remove(entity)
+        # Decrement reproduction cooldown for each entity
+        if entity.reproduction_cooldown > 0:
+            entity.reproduction_cooldown -= delta_time / 3600.0
 
     # Seasonal dynamics (ex. adjusting food regen rate)
     if current_season in ['spring', 'summer']:
@@ -305,6 +323,11 @@ while running:
     screen.fill((200, 200, 200))
     for entity in entities:
         pygame.draw.circle(screen, (0, 0, 0), (entity.x, entity.y), 5)
+        # Render age and energy for each entity
+        age_text = font.render(f"Age: {entity.age:.2f}", True, (0, 0, 0))
+        energy_text = font.render(f"Energy: {entity.energy}", True, (0, 0, 0))
+        screen.blit(age_text, (entity.x - 10, entity.y - 10))
+        screen.blit(energy_text, (entity.x - 10, entity.y))
     for food in food_sources:
         pygame.draw.circle(screen, (0, 255, 0), food, 3)
     pygame.display.flip()
