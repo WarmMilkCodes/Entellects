@@ -71,7 +71,7 @@ class Entity:
         elif self.energy < 50:
             nearest_food_dist = min([((self.x - fx)**2 + (self.y - fy)**2)**0.5 for fx, fy in food_sources])
             new_x, new_y = self.x, self.y
-            if action == 0:  # Move Up
+        if action == 0:  # Move Up
             new_y -= 1
         elif action == 1:  # Move Down
             new_y += 1
