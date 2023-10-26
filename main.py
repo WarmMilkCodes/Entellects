@@ -60,6 +60,10 @@ class Entity:
         self.reproduction_cooldown = 0 # attribute to manage reproduction cooldown
         self.resources = {'wood': 0} # Add other resource types
         self.shelter = None
+        self.vx = 0 # velocity in x-direction
+        self.vy = 0 # velocity in y-direction
+        self.speed = 2 # speed at which Entellect moves
+        self.velocity_decay = 0.95 # factor by which velocity decays each update
 
     def check_mortality(self, environmental_factor=1.0):
         # Energy-based mortality
@@ -123,25 +127,24 @@ class Entity:
         
     def decide_action(self, food_sources, epsilon=0.1):
         state = self.get_state(food_sources)
-        return self.epsilon_greedy_action(state, epsilon)
+        action, angle = self.epsioln_greedy_action(state, epsilon) # action will now return an angle
+        return action, angle
     
-    def perform_action(self, action, food_sources):
+    def perform_action(self, action, angle, food_sources):
         # Placeholder logic for moving and interacting
-        if action == 0: # move up
-            self.y -= 1
-            self.energy -= 1
-        elif action == 1: # move down
-            self.y += 1
-            self.energy -= 1
-        elif action == 2: # move left
-            self.x -= 1
-            self.energy -= 1
-        elif action == 3: # move right
-            self.x += 1
-            self.energy -= 1
+        if action == 0: # move in a direction based on angle
+            self.vx = self.speed * math.cos(angle)
+            self.vy = self.speed * math.sin(angle)
+            self.energy -= 0.2
         elif action == 4: # interact
-            self.energy -= 1
+            self.energy -= 0.5
             # Implement interaction logic
+
+        # Apply the velocity to the position and decay the velocity
+        self.x += self.vx
+        self.y += self.vy
+        self.vx *= self.velocity_decay
+        self.vy *= self.velocity_decay
         
     def receive_reward(self, action, food_sources):
         # Default negative reward for energy expenditure
@@ -187,11 +190,11 @@ class Entity:
 
     def epsilon_greedy_action(self, state, epsilon):
         if random.random() < epsilon:
-            return random.randint(0, 4) # 5 possible actions
+            return random.randint(0, 4), random.uniform(0, 2*math.pi) # return both action and random angle
         else:
             with torch.no_grad():
                 q_values = self.neural_network(state)
-            return q_values.argmax().item()
+            return q_values.argmax().item(), random.uniform(0, 2*math.pi)
         
     def store_experiences(self, state, action, reward, next_state):
         self.memory.append((state, action, reward, next_state))
@@ -281,8 +284,8 @@ while running:
     for entity in entities:
         #Entity ages with the passage of time
         entity.age += delta_time / 3600.0 # Conver seconds to hours
-        action = entity.decide_action(food_sources, epsilon)
-        entity.perform_action(action, food_sources)
+        action, angle = entity.decide_action(food_sources, epsilon)
+        entity.perform_action(action, angle, food_sources)
         reward = entity.receive_reward(action, food_sources)
         next_state = entity.get_state(food_sources)
         entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
