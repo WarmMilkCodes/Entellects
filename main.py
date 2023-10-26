@@ -87,10 +87,10 @@ class Entity:
         else:
             reward -= 2  # Penalize if moving away from food
 
-    # Deduct energy for every action
-    self.energy -= 1
-
-    return reward
+        # Deduct energy for every action
+        self.energy -= 1
+    
+        return reward
 
     def epsilon_greedy_action(self, state, epsilon):
         if random.random() < epsilon:
@@ -168,7 +168,7 @@ while running:
     epsilon *= epsilon_decay
 
     # Render entities and food sources on the screen
-     screen.fill((200, 200, 200))
+    screen.fill((200, 200, 200))
     for entity in entities:
         pygame.draw.circle(screen, (0, 0, 0), (entity.x, entity.y), 5)
     for food in food_sources:
