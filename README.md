@@ -12,28 +12,28 @@ ChronoSim is a dynamic simulation framework designed to showcase the interaction
 - Reproduction Mechanism: Entellects can reproduce based on certain criteria, introducing offspring into the simulation.
 - Resource Gathering: Entellects make decisions to gather and utilize resources in their environment.
 
-  # Future Goals
+# Future Goals
   - Community Building: Introduce complex interactions allowing Entellects to form communities.
   - Ecological Dynamics: Incorporate predators, different terrains, and more varied resources to enrich the ecosystem.
   - Learning Mechanisms: Enhance the AI capabilities to allow Entellects to learn from their experiences.
  
-## Getting Started
-# Prerequisites
+# Getting Started
+## Prerequisites
 - Python 3.x
 - PyTorch
 - Pygame
 
-# Installation
+## Installation
 1. Clone the repository
 2. Install the required packages
 3. Run the simulation
 
-# Contributing
+## Contributing
 Contributions are welcomed! Please see our CONTRIBUTING.md for details
 
-# License
+## License
 This project is licensed under the MIT License - see LICENSE.md for details.
 
-# Acknowledgements
+## Acknowledgements
 - PyTorch for the neural network framework
 - Pygame for providing graphical interface
