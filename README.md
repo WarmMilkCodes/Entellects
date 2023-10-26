@@ -29,9 +29,9 @@ Entellects engage in a variety of interactions, such as:
 - Communication: Strengthen relationships and share knowledge
 - Exchange: Swap resources based on needs and availability
 - Conflict: Engage in disagreements, leading to energy loss and strained relationships
-# 8. Relationship Dynamics:
+## 8. Relationship Dynamics:
 Entellects maintain relationships with each other. Depending on past interactions, they can have positive, neutral, or negative relationships, which influence future interactions.
-# 9. Simulation Graphics
+## 9. Simulation Graphics
 A basic Pygame-based graphicaly representation allows you to watch the Entellects in action, moving around the enivornment and interacting with various elements.
 
 
