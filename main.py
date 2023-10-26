@@ -17,7 +17,7 @@ class EntityNN(nn.Module):
         return torch.softmax(self.fc3(x), dim=0)
         
 class Entity:
-    def __init__(self, x, y, gender=None):
+    def __init__(self, x, y, gender=None, name=None):
         self.x = x
         self.y = y
         self.energy = 100
@@ -26,6 +26,12 @@ class Entity:
         self.neural_network = EntityNN(input_size=4, output_size=5)
         self.optimizer = optim.Adam(self.neural_network.parameters(), lr=0.01)
         self.memory = []
+        self.name = name or self.generate_name()
+
+    def generate_name(self):
+        syllables = ['ka', 'ri', 'to', 'na', 'lu', 'mi']
+        name_length = random.randint(2, 3)
+        return ''.join(random.choice(syllables) for _ in range(name_length))
 
     def can_reproduce_with(self, other_entity):
         # Basic criteria for reproduction
@@ -39,6 +45,8 @@ class Entity:
             child_x = (self.x + other_entity.x) // 2
             child_y = (self.y + other_entity.y) // 2
             child = Entity(child_x, child_y)
+            child_name = self.name[:2] + other_entity.name[-2:]
+            child = Entity(child_x, child_y, name=child_name)
             return child
         
     def get_state(self, food_sources):
