@@ -28,11 +28,9 @@ class Entity:
         nearest_food_dist = min([((self.x - fx)**2 + (self.y -fy)**2)**0.5 for fx, fy in food_sources])
         return torch.tensor([self.x, self.y, self.energy, nearest_food_dist], dtype=torch.float32)
         
-    def decide_action(self):
-        state = torch.tensor([self.x, self.y, self.energy], dtype=torch.float32)
-        action_probs = self.neural_network(state)
-        action = torch.multinomial(action_probs, 1).item()
-        return action
+    def decide_action(self, food_sources, epsilon=0.1):
+        state = self.get_state(food_sources)
+        return self.epsilon_greedy_action(state, epsilon)
     
     def perform_action(self, action, food_sources):
         # Placeholder logic for moving and interacting
@@ -57,13 +55,49 @@ class Entity:
                     food_sources.remove(food)
                     break
         return reward
+
+    def epsilon_greedy_action(self, state, epsilon):
+        if random.random() < epislon:
+            return random.randint(0, 4) # 5 possible actions
+        else:
+            with torch.no_grad():
+                q_values = self.neural_network(state)
+            return q_values.argmax().item()
         
     def store_experiences(self, state, action, reward, next_state):
         self.memory.append((state, action, reward, next_state))
         
-    def train(self, batch_size=32):
-        # Placeholder for training logic using RL
-        pass
+    def train(self, batch_size=32, gamme=0.99):
+        # Check if enough experiences are available
+        if len(self.memory) < batch_size:
+            return
+
+        # Sample experiences from memory
+        batch = random.sample(self.memory, batch_size)
+        states, actions, rewards, next_states = zip(*batch)
+
+        states = torch.stack(states)
+        actions = torch.tensor(actions, dtype=torch.int64)
+        rewards = torch.tensor(rewards, dtype=torch.float32)
+        next_states = torch.stack(next_states)
+
+        # Compute predicted Q-values
+        predicited_q_values = self.neural_network(states).gather(1, actions.unsqueeze(1)).squeeze()
+
+        # Compute target Q-values
+        with torch.no_grad():
+            next_q_values = self.neural_network(next_states).max(1)[0]
+        target_q_values = rewards + gamma * next_q_values
+
+        # Compute loss
+        loss = nn.MSELoss()(predicted_q_values, target_q_values)
+
+        # Optimize neural network
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+    
     
     def store_experience(self, state, action, reward):
         self.memory.append((state, action, reward))
