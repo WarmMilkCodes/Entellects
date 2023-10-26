@@ -207,8 +207,10 @@ class Entity:
     def store_experience(self, state, action, reward):
         self.memory.append((state, action, reward))
     
+# Initialize the time system
+time_system = TimeSystem()
 
-# Intialize the environment
+# Initialize the environment
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 
@@ -218,6 +220,7 @@ food_sources = [(random.randint(0, 800), random.randint(0, 600)) for _ in range(
 
 # Simulation loop
 running = True
+delta_time = 1.0
 epsilon = 1.0 # For epsilon-greedy exploration
 epsilon_decay = 0.995 # Decay rate for epsilon
 
@@ -226,14 +229,26 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+    # Update time system
+    time_system.update(delta_time)
+    current_season = time_system.get_season()
+    current_time_of_day = time_system.get_time_of_day()
+
     # Update entities
     for entity in entities:
+        #Entity ages with the passage of time
+        entity.age += delta_time / 3600.0 # Conver seconds to hours
+        
         action = entity.decide_action(food_sources, epsilon)
         entity.perform_action(action, food_sources)
         reward = entity.receive_reward(action, food_sources)
         next_state = entity.get_state(food_sources)
         entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
         entity.train()
+
+    # Seasonal dynamics (ex. adjusting food regen rate)
+    if current_season in ['spring', 'summer']:
+        
 
     # Check for entities in proximity and allow them to reproduce
     new_offsprings = []
