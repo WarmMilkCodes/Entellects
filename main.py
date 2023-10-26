@@ -159,7 +159,7 @@ while running:
     for entity in entities:
         action = entity.decide_action(food_sources, epsilon)
         entity.perform_action(action, food_sources)
-        reward = entity.receive_reward(action)
+        reward = entity.receive_reward(action, food_sources)
         next_state = entity.get_state(food_sources)
         entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
         entity.train()
@@ -168,7 +168,7 @@ while running:
     epsilon *= epsilon_decay
 
     # Render entities and food sources on the screen
-    screen_fill((200, 200, 200))
+     screen.fill((200, 200, 200))
     for entity in entities:
         pygame.draw.circle(screen, (0, 0, 0), (entity.x, entity.y), 5)
     for food in food_sources:
