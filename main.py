@@ -21,7 +21,30 @@ class TimeSystem:
         self.current_time = initial_time # time in hours
         self.time_scale = time_scale # how many simulation hours pass per real-world hour
 
-    def update
+    def update(self, delta_time):
+        self.current_time += delta_time / 3600 * self.time_scale
+
+    def get_time_of_dau(self):
+        hour = self.current_time % 24
+        if 6 <= hour < 12:
+            return "morning"
+        elif 12 <= hour < 18:
+            return "afternoon"
+        elif 18 <= hour < 24:
+            return "evening"
+        else:
+            return "night"
+
+    def get_season(self):
+        day_of_year = (self.current_time // 24) % 365
+        if 0 <= day_of_year < 91:
+            return "spring"
+        elif 91 <= day_of_year < 182:
+            return "summer"
+        elif 182 <= day_of_year < 273:
+            return "fall"
+        else:
+            return "winter"
         
 class Entity:
     def __init__(self, x, y, gender=None, name=None):
