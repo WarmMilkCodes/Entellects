@@ -58,6 +58,8 @@ class Entity:
         self.memory = []
         self.name = name or self.generate_name()
         self.reproduction_cooldown = 0 # attribute to manage reproduction cooldown
+        self.resources = {'wood': 0} # Add other resource types
+        self.shelter = None
 
     def check_mortality(self, environmental_factor=1.0):
         # Energy-based mortality
@@ -240,6 +242,9 @@ font = pygame.font.SysFont(None, 36) # default font, size 36
 # Create entities and food sources
 entities = [Entity(random.randint(0, 800), random.randint(0, 600)) for _ in range(2)]
 food_sources = [(random.randint(0, 800), random.randint(0, 600)) for _ in range(10)]
+
+# Initialize previous_ticks
+previous_ticks = pygame.time.get_ticks()
 
 # Simulation loop
 running = True
