@@ -1,6 +1,7 @@
 # Entellects: A Neural Network-Based Entity Simulation
 
-![DALL·E 2023-10-26 15 38 40 - photo of a logo representing a simulation environment_ a floating island with a mix of natural and digital elements](https://github.com/WarmMilkCodes/ChronoSim/assets/87686876/8c1cb444-3a92-4e9a-ac8a-04e7bae77b38)
+![DALL·E 2023-10-26 15 38 40 - photo of a logo representing a simulation environment_ a floating island with a mix of natural and digital elements](https://github.com/WarmMilkCodes/Entellects/assets/87686876/7a9d4d63-13c3-40d4-adc0-9d7f4abf9d85)
+
 
 
 ChronoSim is a dynamic simulation framework designed to showcase the interactions and decision-making processes of virtual entities ("Entellecs") within an evolving environment. With an integrated time system and changing seasons, it offers a unique perspective into the life cycles and interactions of Entellecs.
