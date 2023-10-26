@@ -20,11 +20,11 @@ Entellects make decisions to gather and utilize resources in their environment. 
 Instead of rigid, grid-based movement, Entellects have fluid movement capabilities. They can move in any directed based on an angle, making their motion more natural and organic.
 ## 7. Interactions:
 Entellects can interact with:
-## - Food Sources:
+### - Food Sources:
 Entellects gain energy by consuming food sources.
-## - Shelters
+### - Shelters
 Entellects seek out shelters or construct their own, providing protection from environmental challenges.
-## - Other Entellects
+### - Other Entellects
 Entellects engage in a variety of interactions, such as:
 - Communication: Strengthen relationships and share knowledge
 - Exchange: Swap resources based on needs and availability
