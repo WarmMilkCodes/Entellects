@@ -130,15 +130,43 @@ class Entity:
         action, angle = self.epsioln_greedy_action(state, epsilon) # action will now return an angle
         return action, angle
     
-    def perform_action(self, action, angle, food_sources):
-        # Placeholder logic for moving and interacting
+    def perform_action(self, action, angle, food_sources, shelters):
         if action == 0: # move in a direction based on angle
             self.vx = self.speed * math.cos(angle)
             self.vy = self.speed * math.sin(angle)
             self.energy -= 0.2
         elif action == 4: # interact
             self.energy -= 0.5
-            # Implement interaction logic
+            
+            # Interact with food sources
+            for food in food_sources:
+                if abs(self.x - food[0]) < 5 and abs(self.y - food[1]) < 5: # 5 is interaction distance
+                    self.energy += 10 # Increase energy for consuming food source
+                    food_sources.remove(food)
+                    break
+            
+            # Interact with shelters
+            if not self.shelter:
+                for shelter in shelters:
+                    if abs(self.x - shelter.x) < 10 and abs(self.y - shelter.y) < 10: # 10 is interaction distance
+                        if not shelter.occupied:
+                            self.shelter = shelter
+                            self.shelter.occupied = True
+                            break
+
+            # If no shelter and enough resources, construct one
+            if not self.shelter and self.resources['wood'] >= 10:
+                self.resources['wood'] -= 10
+                self.shelter = Shelter(self.x, self.y)
+                shelters.append(self.shelter)
+
+            # Interact with other entities
+            for other in entities:
+                if other != self and abs(self.x - other.x) < 5 and abs(self.y - other.y) < 5: # 5 is interaction distance
+                    # Share knowledge about resources
+                    # Knowledge sharing increases resources (for now)
+                    self.energy += 2
+                    other.energy += 2
 
         # Apply the velocity to the position and decay the velocity
         self.x += self.vx
@@ -231,6 +259,16 @@ class Entity:
     
     def store_experience(self, state, action, reward):
         self.memory.append((state, action, reward))
+
+class Shelter:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.quality = 10 # Quality of the shelter which can degrade over time
+        self.occupied = False
+
+# Create list for shelters
+shelters = []
     
 # Initialize the time system
 time_system = TimeSystem()
@@ -282,10 +320,10 @@ while running:
     
     # Update entities
     for entity in entities:
-        #Entity ages with the passage of time
+        # Entity ages with the passage of time
         entity.age += delta_time / 3600.0 # Conver seconds to hours
         action, angle = entity.decide_action(food_sources, epsilon)
-        entity.perform_action(action, angle, food_sources)
+        entity.perform_action(action, angle, food_sources, shelters)
         reward = entity.receive_reward(action, food_sources)
         next_state = entity.get_state(food_sources)
         entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
