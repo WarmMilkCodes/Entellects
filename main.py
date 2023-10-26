@@ -275,8 +275,12 @@ while running:
 
     # Seasonal dynamics (ex. adjusting food regen rate)
     if current_season in ['spring', 'summer']:
+        if random.random() < 0.05: # 5% chance for a new food source to appear
+            food_sources.append((random.randit(0, 800), random.randit(0, 600)))
+    elif current_season in ['fall', 'winter']:
+        if random.random() < 0.02: # 2% chance for a new food source to appear
+            food_sources.append((random.randint(0, 800), random.randint(0, 600)))
         
-
     # Check for entities in proximity and allow them to reproduce
     new_offsprings = []
     for i, entity1 in enumerate(entities):
