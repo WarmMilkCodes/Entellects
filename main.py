@@ -4,7 +4,7 @@ import torch.optim as optim
 import pygame
 import random
 
-class EntityNN(nn.module):
+class EntityNN(nn.Module):
     def __init__(self, input_size, output_size):
         super(EntityNN, self).__init__()
         self.fc1 = nn.Linear(input_size, 128)
@@ -14,14 +14,14 @@ class EntityNN(nn.module):
     def forward(self, x):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
-        return torch.softmax(self.fg3(x), dim=0)
+        return torch.softmax(self.fc3(x), dim=0)
         
 class Entity:
     def __init__(self, x, y):
         self.x = x
         self.y = y
         self.energy = 100
-        self.neural_network = EntityNN(input_size=3, output_size=5) # for simplicity
+        self.neural_network = EntityNN(input_size=4, output_size=5)
         self.optimizer = optim.Adam(self.neural_network.parameters(), lr=0.01)
         self.memory = []
         
@@ -93,7 +93,7 @@ class Entity:
     return reward
 
     def epsilon_greedy_action(self, state, epsilon):
-        if random.random() < epislon:
+        if random.random() < epsilon:
             return random.randint(0, 4) # 5 possible actions
         else:
             with torch.no_grad():
@@ -103,7 +103,7 @@ class Entity:
     def store_experiences(self, state, action, reward, next_state):
         self.memory.append((state, action, reward, next_state))
         
-    def train(self, batch_size=32, gamme=0.99):
+    def train(self, batch_size=32, gamma=0.99):
         # Check if enough experiences are available
         if len(self.memory) < batch_size:
             return
@@ -118,7 +118,7 @@ class Entity:
         next_states = torch.stack(next_states)
 
         # Compute predicted Q-values
-        predicited_q_values = self.neural_network(states).gather(1, actions.unsqueeze(1)).squeeze()
+        predicted_q_values = self.neural_network(states).gather(1, actions.unsqueeze(1)).squeeze()
 
         # Compute target Q-values
         with torch.no_grad():
