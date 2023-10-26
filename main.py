@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import pygame
 import random
+import math
 
 class EntityNN(nn.Module):
     def __init__(self, input_size, output_size):
@@ -66,7 +67,7 @@ class Entity:
         self.velocity_decay = 0.95 # factor by which velocity decays each update
         self.relationships = {}
 
-     def adjust_relationship(self, other, value):
+    def adjust_relationship(self, other, value):
         """Adjust relationship value with another entity."""
         if other not in self.relationships:
             self.relationships[other] = 0
@@ -432,13 +433,6 @@ while running:
     # Decay epsilon
     epsilon *= epsilon_decay
 
-    # Render in-game date and time
-    in_game_days = int(time_system.current_time // 24)
-    in_game_hours = int(time_system.current_time % 24)
-    time_text = f"Day {in_game_days}, {in_game_hours:02d}:00 {time_system.get_time_of_day().capitalize()}, {time_system.get_season().capitalize()}"
-    time_surface = font.render(time_text, True, (0, 0, 0))
-    screen.blit(time_surface, (10, 10))
-
     # Render entities and food sources on the screen
     screen.fill((200, 200, 200))
     for entity in entities:
@@ -451,6 +445,13 @@ while running:
     for food in food_sources:
         pygame.draw.circle(screen, (0, 255, 0), food, 3)
     pygame.display.flip()
+
+    # Render in-game date and time
+    in_game_days = int(time_system.current_time // 24)
+    in_game_hours = int(time_system.current_time % 24)
+    time_text = f"Day {in_game_days}, {in_game_hours:02d}:00 {time_system.get_time_of_day().capitalize()}, {time_system.get_season().capitalize()}"
+    time_surface = font.render(time_text, True, (0, 0, 0))
+    screen.blit(time_surface, (10, 10))
 
 pygame.quit()
 
