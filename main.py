@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import pygame
+import random
 
 class EntityNN(nn.module):
     def __init__(self, input_size, output_size):
@@ -105,3 +107,44 @@ class Entity:
     def train(self):
         # Placeholder for training logic using RL
         pass
+
+# Intialize the environment
+pygame.init()
+screen = pygame.display.set_mode((800, 600))
+
+# Create entities and food sources
+entities = [Entity(random.randint(0, 800), random.randint(0, 600)) for _ in range(2)]
+food_sources = [(random.randint(0, 800), random.randint(0, 600)) for _ in range(10)]
+
+# Simulation loop
+running = True
+epsilon - 1.0 # For epsilon-greedy exploration
+epsilon_decay = 0.995 # Decay rate for epsilon
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Update entities
+    for entity in entities:
+        action = entity.decide_action(food_sources, epsilon)
+        entity.perform_action(action, food_sources)
+        reward = entity.receive_reward(action)
+        next_state = entity.get_state(food_sources)
+        entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
+        entity.train()
+
+    # Decay epsilon
+    epsilon *= epsilon_decay
+
+    # Render entities and food sources on the screen
+    screen_fill((200, 200, 200))
+    for entity in entities:
+        pygame.draw.circle(screen, (0, 0, 0), (entity.x, entity.y), 5)
+    for food in food_sources:
+        pygame.draw.circle(screen, (0, 255, 0), food, 3)
+    pygame.display.flip()
+
+pygame.quit()
+
