@@ -98,15 +98,10 @@ class Entity:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-
-    
     
     def store_experience(self, state, action, reward):
         self.memory.append((state, action, reward))
-        
-    def train(self):
-        # Placeholder for training logic using RL
-        pass
+    
 
 # Intialize the environment
 pygame.init()
