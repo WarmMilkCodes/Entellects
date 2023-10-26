@@ -218,7 +218,7 @@ food_sources = [(random.randint(0, 800), random.randint(0, 600)) for _ in range(
 
 # Simulation loop
 running = True
-epsilon - 1.0 # For epsilon-greedy exploration
+epsilon = 1.0 # For epsilon-greedy exploration
 epsilon_decay = 0.995 # Decay rate for epsilon
 
 while running:
