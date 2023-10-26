@@ -287,7 +287,7 @@ while running:
         next_state = entity.get_state(food_sources)
         entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
         entity.train()
-        if entity.check_morality(environmental_factor):
+        if entity.check_mortality(environmental_factor):
             entities.remove(entity)
         # Decrement reproduction cooldown for each entity
         if entity.reproduction_cooldown > 0:
