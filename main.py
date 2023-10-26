@@ -17,13 +17,29 @@ class EntityNN(nn.Module):
         return torch.softmax(self.fc3(x), dim=0)
         
 class Entity:
-    def __init__(self, x, y):
+    def __init__(self, x, y, gender=None):
         self.x = x
         self.y = y
         self.energy = 100
+        self.age = 0
+        self.gender = gender or random.choice(['male', 'female'])
         self.neural_network = EntityNN(input_size=4, output_size=5)
         self.optimizer = optim.Adam(self.neural_network.parameters(), lr=0.01)
         self.memory = []
+
+    def can_reproduce_with(self, other_entity):
+        # Basic criteria for reproduction
+        if self.gender != other_entity.gender and self.age > 10 and other_entity.age > 10:
+            return True
+        return False
+
+    def reproduce(self, other_entity):
+        if self.can_reproduce_with(other_entity):
+            # Determine offspring properties based on parents
+            child_x = (self.x + other_entity.x) // 2
+            child_y = (self.y + other_entity.y) // 2
+            child = Entity(child_x, child_y)
+            return child
         
     def get_state(self, food_sources):
         # Find distance to nearest food source, as an example
@@ -163,6 +179,16 @@ while running:
         next_state = entity.get_state(food_sources)
         entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
         entity.train()
+
+    # Check for entities in proximity and allow them to reproduce
+    new_offsprings = []
+    for i, entity1 in enumerate(entities):
+        for j, entity2 in enumerate(entities):
+            if i != j and abs(entity1.x - entity2.x) < 5 and abs(entity1.y - entity2.y) < 5:
+                child = entity1.reproduce(entity2)
+                if child:
+                    new_offsprings.append(child)
+    entities.extend(new_offsprings)
 
     # Decay epsilon
     epsilon *= epsilon_decay
