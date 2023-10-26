@@ -24,7 +24,7 @@ class TimeSystem:
     def update(self, delta_time):
         self.current_time += delta_time / 3600 * self.time_scale
 
-    def get_time_of_dau(self):
+    def get_time_of_day(self):
         hour = self.current_time % 24
         if 6 <= hour < 12:
             return "morning"
@@ -146,7 +146,7 @@ class Entity:
         reward = -1
 
         # If the entity interacts
-        if actions == 4:
+        if action == 4:
             interaction_reward = 0
 
             # Check for food within interaction range
@@ -181,9 +181,6 @@ class Entity:
         else:
             reward -= 2  # Penalize if moving away from food
 
-        # Deduct energy for every action
-        self.energy -= 1
-    
         return reward
 
     def epsilon_greedy_action(self, state, epsilon):
