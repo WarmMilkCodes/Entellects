@@ -48,15 +48,49 @@ class Entity:
             pass # interaction logic (with food or other entities)
         
     def receive_reward(self, action, food_sources):
-        # Placeholder logic for giving rewards based on actions and output
-        reward = -1 # default negative reward for energy expenditure
-        if action == 4: # interact
+        # Default negative reward for energy expenditure
+        reward = -1
+
+        # If the entity interacts
+        if actions == 4:
+            interaction_reward = 0
+
+            # Check for food within interaction range
             for food in food_sources:
                 if abs(self.x - food[0]) < 5 and abs(self.y - food[1]) < 5:
-                    reward += 10 # postitive reward for finding food
+                    interaction_reward += 10 # Positive reward for finding food
+                    self.energy += 10 # Increase energy for consuming food
                     food_sources.remove(food)
                     break
-        return reward
+            
+            # If no food was found within interaction range, slightly penalize
+            if interaction_reward == 0:
+                reward -= 2
+
+        # If the entity moves, check if it's moving towards food when energy is low
+        elif self.energy < 50:
+            nearest_food_dist = min([((self.x - fx)**2 + (self.y - fy)**2)**0.5 for fx, fy in food_sources])
+            new_x, new_y = self.x, self.y
+            if action == 0:  # Move Up
+            new_y -= 1
+        elif action == 1:  # Move Down
+            new_y += 1
+        elif action == 2:  # Move Left
+            new_x -= 1
+        elif action == 3:  # Move Right
+            new_x += 1
+        new_nearest_food_dist = min([((new_x - fx)**2 + (new_y - fy)**2)**0.5 for fx, fy in food_sources])
+        
+        # If moving closer to food, slightly reward the entity
+        if new_nearest_food_dist < nearest_food_dist:
+            reward += 2
+        else:
+            reward -= 2  # Penalize if moving away from food
+
+    # Deduct energy for every action
+    self.energy -= 1
+
+    return reward
 
     def epsilon_greedy_action(self, state, epsilon):
         if random.random() < epislon:
