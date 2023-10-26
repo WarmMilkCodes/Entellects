@@ -64,7 +64,16 @@ class Entity:
         self.vy = 0 # velocity in y-direction
         self.speed = 2 # speed at which Entellect moves
         self.velocity_decay = 0.95 # factor by which velocity decays each update
+        self.relationships = {}
 
+     def adjust_relationship(self, other, value):
+        """Adjust relationship value with another entity."""
+        if other not in self.relationships:
+            self.relationships[other] = 0
+        self.relationships[other] += value
+        # Keeping relationship values between -100 and 100
+        self.relationships[other] = max(-100, min(100, self.relationships[other]))
+    
     def check_mortality(self, environmental_factor=1.0):
         # Energy-based mortality
         if self.energy <= 0:
@@ -96,7 +105,6 @@ class Entity:
             # Find nearest shelter or community
             pass
         
-
     def generate_name(self):
         syllables = ['ka', 'ri', 'to', 'na', 'lu', 'mi']
         name_length = random.randint(2, 3)
@@ -120,21 +128,25 @@ class Entity:
             other_entity.reproduction_cooldown = 24
             return child
         
-    def get_state(self, food_sources):
-        # Find distance to nearest food source, as an example
+    def get_state(self, food_sources, entities):
         nearest_food_dist = min([((self.x - fx)**2 + (self.y -fy)**2)**0.5 for fx, fy in food_sources])
-        return torch.tensor([self.x, self.y, self.energy, nearest_food_dist], dtype=torch.float32)
+
+        # Find the nearest entity and its details
+        nearest_entity = min(entities, key=lambda e: ((self.x - e.x)**2 + (self.y - e.y)**2)**0.5 if e != self else float('inf'))
+        nearest_entity_dist = ((self.x - nearest_entity.x)**2 + (self.y - nearest_entity.y)**2)**0.5
+        relationship_value = self.relationships.get(nearest_entity, 0)
+        return torch.tensor([self.x, self.y, self.energy, nearest_food_dist, nearest_entity_dist, nearest_entity.age, relationship_value], dtype=torch.float32)
         
-    def decide_action(self, food_sources, epsilon=0.1):
-        state = self.get_state(food_sources)
-        action, angle = self.epsioln_greedy_action(state, epsilon) # action will now return an angle
-        return action, angle
+    def decide_action(self, food_sources, entities, epsilon=0.1):
+        state = self.get_state(food_sources, entities)
+        return self.epsilon_greedy_action(state, epsilon)
     
-    def perform_action(self, action, angle, food_sources, shelters):
+    def perform_action(self, action, angle, food_sources, shelters, entities):
         if action == 0: # move in a direction based on angle
             self.vx = self.speed * math.cos(angle)
             self.vy = self.speed * math.sin(angle)
             self.energy -= 0.2
+            
         elif action == 4: # interact
             self.energy -= 0.5
             
@@ -163,10 +175,38 @@ class Entity:
             # Interact with other entities
             for other in entities:
                 if other != self and abs(self.x - other.x) < 5 and abs(self.y - other.y) < 5: # 5 is interaction distance
-                    # Share knowledge about resources
-                    # Knowledge sharing increases resources (for now)
-                    self.energy += 2
-                    other.energy += 2
+                    relationship_value = self.relationships.get(other, 0)
+                    
+                    # If they have a good relationship
+                    if relationship_value > 5:
+                        interaction_type = 'communicate'
+                    # If they have a neutral relationship
+                    elif -5 <= relationship_value <= 5:
+                        interaction_type = 'exchange'
+                    # If they have a bad relationship
+                    else:
+                        interaction_type = 'conflict'
+
+                    if interaction_type == 'communicate':
+                        # Strengthen relationship slightly
+                        self.adjust_relationship(other, 2)
+                        # Learn about a distant food source or something similar
+                        # (e.g., update an internal map or knowledge base)
+
+                    elif interaction_type == 'exchange':
+                        # Entities exchange resources based on their needs and availability
+                        if self.resources['wood'] > other.resources['wood'] + 1:
+                            self.resources['wood'] -= 1
+                            other.resources['wood'] += 1
+                        # Improve relationship status
+                        self.adjust_relationship(other, 3)
+
+                    elif interaction_type == 'conflict':
+                        # Decrease in energy due to conflict
+                        self.energy -= 5
+                        other.energy -= 5
+                        # Worsen relationship status drastically
+                        self.adjust_relationship(other, -10)
 
         # Apply the velocity to the position and decay the velocity
         self.x += self.vx
@@ -216,6 +256,43 @@ class Entity:
 
         return reward
 
+    def interact_with_entity(self, other):
+        # Check the relationship value
+        relationship_value = self.relationships.get(other, 0)
+        
+        # If they have a good relationship
+        if relationship_value > 5:
+            interaction_type = 'communicate'
+        # If they have a neutral relationship
+        elif -5 <= relationship_value <= 5:
+            interaction_type = 'exchange'
+        # If they have a bad relationship
+        else:
+            interaction_type = 'conflict'
+            
+        if interaction_type == 'communicate':
+            # Improve relationship status slightly
+            self.relationships[other] = relationship_value + 1
+            other.relationships[self] = other.relationships.get(self, 0) + 1
+
+        elif interaction_type == 'exchange':
+            # Exchange resources or knowledge
+            # Example: if one has more wood, it gives some to the other
+            if self.resources['wood'] > other.resources['wood'] + 1:
+                self.resources['wood'] -= 1
+                other.resources['wood'] += 1
+            else:
+                # They exchange knowledge or other resources
+                pass
+            # Improve relationship status
+            self.relationships[other] = relationship_value + 2
+            other.relationships[self] = other.relationships.get(self, 0) + 2
+
+        elif interaction_type == 'conflict':
+            # Worsen relationship status drastically
+            self.relationships[other] = relationship_value - 5
+            other.relationships[self] = other.relationships.get(self, 0) - 5
+    
     def epsilon_greedy_action(self, state, epsilon):
         if random.random() < epsilon:
             return random.randint(0, 4), random.uniform(0, 2*math.pi) # return both action and random angle
