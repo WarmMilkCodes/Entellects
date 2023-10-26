@@ -6,7 +6,7 @@
 ChronoSim is a dynamic simulation framework designed to showcase the interactions and decision-making processes of virtual entities within an evolving environment. With an integrated time system and changing seasons, it offers a unique perspective into the life cycles and interactions of these entities.
 
 # Features
-- Entity Neural Networks: Each entity is equipped with an neural network to make decisions based on its environment and state.
+- Entity Neural Networks: Each entity is equipped with a neural network to make decisions based on its environment and state.
 - Dynamic Time System: Simulates the passage of time, with each real-world minute representing an hour in the simulation.
 - Season Dynamics: Experience the changing seasons and observe how they influence the behavior of entities.
 - Reproduction Mechanism: Entities can reproduce based on certain criteria, introducing offspring into the simulation.
