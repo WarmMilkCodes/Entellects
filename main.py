@@ -15,6 +15,13 @@ class EntityNN(nn.Module):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         return torch.softmax(self.fc3(x), dim=0)
+
+class TimeSystem:
+    def __init__(self, initial_time=0, time_scale=24):
+        self.current_time = initial_time # time in hours
+        self.time_scale = time_scale # how many simulation hours pass per real-world hour
+
+    def update
         
 class Entity:
     def __init__(self, x, y, gender=None, name=None):
@@ -27,6 +34,23 @@ class Entity:
         self.optimizer = optim.Adam(self.neural_network.parameters(), lr=0.01)
         self.memory = []
         self.name = name or self.generate_name()
+
+    def gather_resources(self, resource):
+        if self.nearby(resource):
+            self.resource[resource.type] += resource.gather()
+
+    def construct_shelter(self):
+        if self.resources['wood'] >= 10: # example condition
+            self.shelter = Shelter(quality=self.resources['wood'])
+            self.resources['wood'] -= 10
+
+    def seek_shelter(self):
+        if self.shelter and self.shelter.quality > 0:
+            self.in_shelter = True
+        else:
+            # Find nearest shelter or community
+            pass
+        
 
     def generate_name(self):
         syllables = ['ka', 'ri', 'to', 'na', 'lu', 'mi']
