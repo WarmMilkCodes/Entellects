@@ -8,7 +8,7 @@ import math
 class EntityNN(nn.Module):
     def __init__(self, input_size, output_size):
         super(EntityNN, self).__init__()
-        self.fc1 = nn.Linear(input_size, 128)
+        self.fc1 = nn.Linear(7, 128)
         self.fc2 = nn.Linear(128, 64)
         self.fc3 = nn.Linear(64, output_size)
         
@@ -130,14 +130,17 @@ class Entity:
             return child
         
     def get_state(self, food_sources, entities):
+        print("Entities type in get_state:", type(entities))
+        print("Entities content:", entities)
         nearest_food_dist = min([((self.x - fx)**2 + (self.y -fy)**2)**0.5 for fx, fy in food_sources])
 
         # Find the nearest entity and its details
+        print(type(entities), entities)
         nearest_entity = min(entities, key=lambda e: ((self.x - e.x)**2 + (self.y - e.y)**2)**0.5 if e != self else float('inf'))
         nearest_entity_dist = ((self.x - nearest_entity.x)**2 + (self.y - nearest_entity.y)**2)**0.5
         relationship_value = self.relationships.get(nearest_entity, 0)
         return torch.tensor([self.x, self.y, self.energy, nearest_food_dist, nearest_entity_dist, nearest_entity.age, relationship_value], dtype=torch.float32)
-        
+            
     def decide_action(self, food_sources, entities, epsilon=0.1):
         state = self.get_state(food_sources, entities)
         return self.epsilon_greedy_action(state, epsilon)
@@ -216,6 +219,8 @@ class Entity:
         self.vy *= self.velocity_decay
         
     def receive_reward(self, action, food_sources):
+        new_x, new_y = self.x, self.y
+        nearest_food_dist = min([((self.x - fx)**2 + (self.y - fy)**2)**0.5 for fx, fy in food_sources])
         # Default negative reward for energy expenditure
         reward = -1
 
@@ -238,7 +243,6 @@ class Entity:
         # If the entity moves, check if it's moving towards food when energy is low
         elif self.energy < 50:
             nearest_food_dist = min([((self.x - fx)**2 + (self.y - fy)**2)**0.5 for fx, fy in food_sources])
-            new_x, new_y = self.x, self.y
         if action == 0:  # Move Up
             new_y -= 1
         elif action == 1:  # Move Down
@@ -302,8 +306,8 @@ class Entity:
                 q_values = self.neural_network(state)
             return q_values.argmax().item(), random.uniform(0, 2*math.pi)
         
-    def store_experiences(self, state, action, reward, next_state):
-        self.memory.append((state, action, reward, next_state))
+    def store_experiences(self, state, action, reward):
+        self.memory.append((state, action, reward))
         
     def train(self, batch_size=32, gamma=0.99):
         # Check if enough experiences are available
@@ -312,27 +316,29 @@ class Entity:
 
         # Sample experiences from memory
         batch = random.sample(self.memory, batch_size)
-        states, actions, rewards, next_states = zip(*batch)
+        for item in batch:
+            print(item)
+        states, actions, rewards = zip(*batch)
 
         states = torch.stack(states)
         actions = torch.tensor(actions, dtype=torch.int64)
         rewards = torch.tensor(rewards, dtype=torch.float32)
-        next_states = torch.stack(next_states)
+        #next_states = torch.stack(next_states)
 
         # Compute predicted Q-values
         predicted_q_values = self.neural_network(states).gather(1, actions.unsqueeze(1)).squeeze()
 
         # Compute target Q-values
-        with torch.no_grad():
-            next_q_values = self.neural_network(next_states).max(1)[0]
-        target_q_values = rewards + gamma * next_q_values
+        #with torch.no_grad():
+        #    next_q_values = self.neural_network(next_states).max(1)[0]
+        #target_q_values = rewards + gamma * next_q_values
 
         # Compute loss
-        loss = nn.MSELoss()(predicted_q_values, target_q_values)
+        #loss = nn.MSELoss()(predicted_q_values, target_q_values)
 
         # Optimize neural network
         self.optimizer.zero_grad()
-        loss.backward()
+        #loss.backward()
         self.optimizer.step()
     
     def store_experience(self, state, action, reward):
@@ -400,11 +406,12 @@ while running:
     for entity in entities:
         # Entity ages with the passage of time
         entity.age += delta_time / 3600.0 # Conver seconds to hours
-        action, angle = entity.decide_action(food_sources, epsilon)
-        entity.perform_action(action, angle, food_sources, shelters)
+        action, angle = entity.decide_action(food_sources, entities, epsilon)
+
+        entity.perform_action(action, angle, food_sources, shelters, entities)
         reward = entity.receive_reward(action, food_sources)
-        next_state = entity.get_state(food_sources)
-        entity.store_experience(entity.get_state(food_sources), action, reward, next_state)
+        #next_state = entity.get_state(food_sources, entities)
+        entity.store_experience(entity.get_state(food_sources, entities), action, reward)
         entity.train()
         if entity.check_mortality(environmental_factor):
             entities.remove(entity)
