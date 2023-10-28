@@ -143,7 +143,7 @@ class Entity:
             
     def decide_action(self, food_sources, entities, epsilon=0.1):
         state = self.get_state(food_sources, entities)
-        return self.epsilon_greedy_action(state, epsilon)
+        return self.epsilon_greedy_action(state, food_sources, epsilon)
     
     def perform_action(self, action, angle, food_sources, shelters, entities):
         if action == 0: # move in a direction based on angle
@@ -224,6 +224,12 @@ class Entity:
         # Default negative reward for energy expenditure
         reward = -1
 
+        # If moving towards food, reward
+        if new_nearest_food_dist < nearest_food_dist:
+            reward += 2.5
+        else:
+            reward -= 1 # Penalize for moving away from food
+
         # If the entity interacts
         if action == 4:
             interaction_reward = 0
@@ -298,13 +304,19 @@ class Entity:
             self.relationships[other] = relationship_value - 5
             other.relationships[self] = other.relationships.get(self, 0) - 5
     
-    def epsilon_greedy_action(self, state, epsilon):
+    def epsilon_greedy_action(self, state, food_sources, epsilon):
         if random.random() < epsilon:
             return random.randint(0, 4), random.uniform(0, 2*math.pi) # return both action and random angle
         else:
             with torch.no_grad():
                 q_values = self.neural_network(state)
-            return q_values.argmax().item(), random.uniform(0, 2*math.pi)
+            
+            # Compute the direction to the nearest food source
+            nearest_food = min(food_sources, key=lambda f: ((self.x - f[0])**2 + (self.y - f[1])**2)**0.5)
+            angle_to_food = math.atan2(nearest_food[1] - self.y, nearest_food[0] - self.x)
+            
+            return q_values.argmax().item(), angle_to_food
+
         
     def store_experiences(self, state, action, reward):
         self.memory.append((state, action, reward))
@@ -442,13 +454,19 @@ while running:
 
     # Render entities and food sources on the screen
     screen.fill((200, 200, 200))
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+
     for entity in entities:
         pygame.draw.circle(screen, (0, 0, 0), (entity.x, entity.y), 5)
-        # Render age and energy for each entity
-        age_text = font.render(f"Age: {entity.age:.2f}", True, (0, 0, 0))
-        energy_text = font.render(f"Energy: {entity.energy}", True, (0, 0, 0))
-        screen.blit(age_text, (entity.x - 10, entity.y - 10))
-        screen.blit(energy_text, (entity.x - 10, entity.y))
+
+        # Check distance between mouse and entity
+        distance_to_mouse = math.sqrt((mouse_x - entity.x)**2 + (mouse_y - entity.y)**2)
+        if distance_to_mouse < 10:
+            # Render age and energy for each Entellect
+            age_text = font.render(f"Age: {entity.age:.2f}", True, (0, 0, 0))
+            energy_text = font.render(f"Energy: {entity.energy}", True, (0, 0, 0))
+            screen.blit(age_text, (entity.x - 10, entity.y - 10))
+            screen.blit(energy_text, (entity.x - 10, entity.y))
     for food in food_sources:
         pygame.draw.circle(screen, (0, 255, 0), food, 3)
     pygame.display.flip()
