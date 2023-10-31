@@ -4,13 +4,13 @@
 
 
 
-Entellects is a dynamic simulation framework designed to showcase the interactions and decision-making processes of virtual entities ("Entellecs") within an evolving environment. With an integrated time system and changing seasons, it offers a unique perspective into the life cycles and interactions of Entellecs.
+Entellects is a dynamic simulation framework designed to showcase the interactions and decision-making processes of virtual entities known as "Entellects." Set within an evolving environment featuring an integrated time system and changing seasons, it offers a unique glimpse into the life cycles, behaviors, and interactions of Entellects.
 
 # Features
 ## 1. Entity Neural Networks
-Each Entellect is equipped with a neural network to make decisions based on its environment and state.
+Each Entellect utilizes a neural network for decision-making based on environmental and personal states.
 ## 2. Dynamic Time System
-Simulates the passage of time, with days and seasons. This system influences Entellect behavior, especially when environmental factors become challenging.
+Simulate the flow of time, complete with days and seasonal changes, affecting Entellect behaviors and environmental challenges.
 ## 3. Season Dynamics
 Experience the changing seasons and observe how they influence the behavior of Entellects.
 ## 4. Reproduction Mechanism
