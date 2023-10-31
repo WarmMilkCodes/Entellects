@@ -12,36 +12,33 @@ Each Entellect utilizes a neural network for decision-making based on environmen
 ## 2. Dynamic Time System
 Simulate the flow of time, complete with days and seasonal changes, affecting Entellect behaviors and environmental challenges.
 ## 3. Season Dynamics
-Experience the changing seasons and observe how they influence the behavior of Entellects.
+Observe the influence of changing seasons on Entellect behavior.
 ## 4. Reproduction Mechanism
-Entellects can reproduce based on certain criteria, introducing offspring into the simulation.
+Entellects gather and utilize resources, which can be used for shelter construction or exchanged with others.
 ## 5. Resource Gathering and Management
 Entellects make decisions to gather and utilize resources in their environment. Resources can be used to construct shelters or exchanged with other Entellects.
 ## 6. Dynamic Movement
-Instead of rigid, grid-based movement, Entellects have fluid movement capabilities. They can move in any directed based on an angle, making their motion more natural and organic.
+Fluid and angle-based movement allows Entellects to navigate their environment organically.
 ## 7. Interactions
-Entellects can interact with...
+Entellects interact with...
 ## - Food Sources:
-Entellects gain energy by consuming food sources.
+For energy replenishment.
 ## - Shelters
-Entellects seek out shelters or construct their own, providing protection from environmental challenges.
-## - Other Entellects
-Entellects engage in a variety of interactions, such as:
-- Communication: Strengthen relationships and share knowledge
-- Exchange: Swap resources based on needs and availability
-- Conflict: Engage in disagreements, leading to energy loss and strained relationships
+Offering protection from environmental factors.
+## - Fellow Entellects
+Through communication, resource exchange, and occasional conflicts.
 ## 8. Relationship Dynamics:
-Entellects maintain relationships with each other. Depending on past interactions, they can have positive, neutral, or negative relationships, which influence future interactions.
+Past interactions shape the relationships between Entellects, influencing future engagements.
 ## 9. Simulation Graphics
-A basic Pygame-based graphicaly representation allows you to watch the Entellects in action, moving around the enivornment and interacting with various elements.
+Witness the simulation in action with a basic Pygame-based visual representation.
 
 
 
 # Future Enhancements
-- Introduction of more resources and tools
-- Advanced shelters with different attributes
-- More sophisticated neural network architectures for richer behaviors
- 
+- Introduce a wider variety of resources and tools.
+- Develop advanced shelters with distinct attributes
+- Implement sophisticated neural network architectures for enhanced behaviors.
+- 
 # Getting Started
 ## Prerequisites
 - Python 3.x
