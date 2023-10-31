@@ -4,7 +4,7 @@
 
 
 
-ChronoSim is a dynamic simulation framework designed to showcase the interactions and decision-making processes of virtual entities ("Entellecs") within an evolving environment. With an integrated time system and changing seasons, it offers a unique perspective into the life cycles and interactions of Entellecs.
+Entellects is a dynamic simulation framework designed to showcase the interactions and decision-making processes of virtual entities ("Entellecs") within an evolving environment. With an integrated time system and changing seasons, it offers a unique perspective into the life cycles and interactions of Entellecs.
 
 # Features
 ## 1. Entity Neural Networks
