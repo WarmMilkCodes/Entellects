@@ -7,13 +7,18 @@ class Resource:
 
   def is_collected_by(self, entellect):
     # Logic to determine if Entellect is close enough to collect
+    pass
 
   def draw(self, screen):
     # Render the resource on screen based on its type
+    pass
+
+  def collected_with(self):
+    return "Hands" # Default 
 
 class Water(Resource):
   def __init__(self, quantity):
-    super().__init__(name="Water", resource_type="Survival", quantity=quantity)
+    super().__init__(resource_type="Survival", quantity=quantity, x=x, y=y)
     # other unique properties of water
 
   def collected_with(self):
@@ -21,7 +26,7 @@ class Water(Resource):
 
 class Wood(Resource):
   def __init__(self, quantity):
-    super().__init__(name="Wood", resource_type="Building", quantity=quantity)
+    super().__init__(resource_type="Building", quantity=quantity, x=x, y=y)
     # other unique properties
 
   def collected_with(self):
@@ -29,10 +34,10 @@ class Wood(Resource):
 
 class Stone(Resource):
   def __init__(self, quantity):
-    super().__init__(name="Stone", resource_type="Building", quantity=quantity)
+    super().__init__(resource_type="Building", quantity=quantity, x=x, y=y)
     # other unique properties
 
-  def mine_with(self):
+  def collected_with(self):
     return "Pickaxe" 
 
     
