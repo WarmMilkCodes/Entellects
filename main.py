@@ -1,10 +1,7 @@
-import pygame
-import pygame.font
-import random
-import math
+import pygame, pygame.font, random, math, torch
 from .entities import entellect, food, learning
 from .environment import timesystem
-import torch
+from .utils import interpolate_color, get_background_color
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
