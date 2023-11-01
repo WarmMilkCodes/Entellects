@@ -11,4 +11,28 @@ class Resource:
   def draw(self, screen):
     # Render the resource on screen based on its type
 
+class Water(Resource):
+  def __init__(self, quantity):
+    super().__init__(name="Water", resource_type="Survival", quantity=quantity)
+    # other unique properties of water
+
+  def collected_with(self):
+    return "Bucket"
+
+class Wood(Resource):
+  def __init__(self, quantity):
+    super().__init__(name="Wood", resource_type="Building", quantity=quantity)
+    # other unique properties
+
+  def collected_with(self):
+    return "Axe"
+
+class Stone(Resource):
+  def __init__(self, quantity):
+    super().__init__(name="Stone", resource_type="Building", quantity=quantity)
+    # other unique properties
+
+  def mine_with(self):
+    return "Pickaxe" 
+
     
