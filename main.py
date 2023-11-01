@@ -2,7 +2,8 @@ import pygame
 import pygame.font
 import random
 import math
-from .entities import entellect, food
+from .entities import entellect, food, learning
+from .environment import timesystem
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
