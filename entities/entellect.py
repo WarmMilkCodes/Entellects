@@ -9,6 +9,13 @@ class Entellect:
         self.brain = Brain()
         self.brain_optimizer = torch.optim.Adam(self.brain.paramaters(), lr=0.001)
         self.q_learning = QLearning(self.brain)
+        self.resources = {} # store collected resources
+
+    def collect(self, resource):
+        if resource.resource_type not in self.resources:
+            self.resources[resource.resource_type] = 0
+        self.resources[resource.resource_type] += 1
+        resource.quantity -= 1
 
     def choose_action(self):
         inputs = self.get_state()
